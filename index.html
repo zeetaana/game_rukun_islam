@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Rukun Islam</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Comic+Neue:wght@700&display=swap');
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:linear-gradient(180deg,#dbeafe,#fef3c7);
+  display:flex;
+  justify-content:center;
+  font-family:'Poppins',sans-serif;
+}
+
+.app{
+  width:100%;
+  max-width:430px;
+  padding:16px;
+}
+
+/* HEADER */
+.header{
+  background:#fff;
+  border-radius:22px;
+  padding:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+  margin-bottom:18px;
+}
+
+.header-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.back{
+  width:34px;height:34px;
+  background:#e0f2fe;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+
+.header h2{margin:0;font-size:16px;color:#1e40af}
+.header p{margin:10px 0 4px;font-weight:600}
+.header span{font-size:12px;color:#555}
+
+/* EMOJI */
+.emoji-box{
+  display:flex;
+  justify-content:center;
+  margin:10px 0 -22px;
+  z-index:2;
+  position:relative;
+}
+
+.emoji{
+  width:64px;height:64px;
+  border-radius:50%;
+  background:linear-gradient(#fff,#e0f2fe);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  box-shadow:0 6px 14px rgba(0,0,0,.2);
+}
+
+/* GAME CARD */
+.game-card{
+  background:linear-gradient(#fff,#f0f9ff);
+  border-radius:26px;
+  padding:32px 16px 16px;
+  box-shadow:0 12px 28px rgba(0,0,0,.12);
+  font-family:'Comic Neue',cursive;
+}
+
+/* WORDS */
+.words{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:18px;
+}
+
+.word{
+  flex:1;
+  background:linear-gradient(180deg,#60a5fa,#3b82f6);
+  color:#fff;
+  text-align:center;
+  padding:10px 6px;
+  border-radius:18px;
+  font-size:14px;
+  font-weight:700;
+  cursor:grab;
+  box-shadow:0 4px 8px rgba(0,0,0,.25);
+  transition:.3s;
+}
+
+/* HILANG JIKA BENAR */
+.word.hide{
+  opacity:0;
+  transform:scale(.5);
+  pointer-events:none;
+}
+
+/* TARGET */
+.targets{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.target{
+  border:2px dashed #93c5fd;
+  border-radius:16px;
+  padding:12px;
+  min-height:46px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:15px;
+  color:#64748b;
+}
+
+.target.correct{
+  background:#dcfce7;
+  border-color:#22c55e;
+  color:#15803d;
+}
+
+.target.wrong{
+  background:#fee2e2;
+  border-color:#ef4444;
+  color:#b91c1c;
+  animation:shake .3s;
+}
+
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-4px)}
+  50%{transform:translateX(4px)}
+  75%{transform:translateX(-4px)}
+  100%{transform:translateX(0)}
+}
+
+/* BUTTON */
+.reset{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(90deg,#22c55e,#16a34a);
+  color:white;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  font-family:'Comic Neue',cursive;
+}
+
+/* FOOTER */
+.footer{
+  margin-top:16px;
+  background:#e0f2fe;
+  border-radius:18px;
+  padding:12px;
+  text-align:center;
+  font-size:12px;
+  color:#1e3a8a;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="header">
+    <div class="header-top">
+      <div class="back">←</div>
+      <h2>Permainan Anak</h2>
+    </div>
+    <p>Hari ini mau main apa?</p>
+    <span>Susun Rukun Islam dengan urutan benar</span>
+  </div>
+
+  <div class="emoji-box">
+    <div class="emoji" id="emoji">🙂</div>
+  </div>
+
+  <div class="game-card">
+    <div class="words" id="words"></div>
+    <div class="targets" id="targets"></div>
+    <button class="reset" onclick="location.reload()">Ulangi 🔄</button>
+  </div>
+
+  <div class="footer">
+    🌙 Belajar Rukun Islam jadi menyenangkan
+  </div>
+
+</div>
+
+<script>
+const rukun=["Syahadat","Shalat","Zakat","Puasa","Haji"];
+const acak=[...rukun].sort(()=>Math.random()-0.5);
+
+const wordsEl=document.getElementById("words");
+const targetsEl=document.getElementById("targets");
+const emoji=document.getElementById("emoji");
+
+function init(){
+  acak.forEach(w=>{
+    const div=document.createElement("div");
+    div.className="word";
+    div.textContent=w;
+    div.draggable=true;
+
+    div.addEventListener("dragstart",e=>{
+      e.dataTransfer.setData("text",w);
+      e.dataTransfer.setData("id",Date.now());
+      window.draggedWord=div;
+    });
+
+    wordsEl.appendChild(div);
+  });
+
+  rukun.forEach((r,i)=>{
+    const t=document.createElement("div");
+    t.className="target";
+    t.textContent=`Urutan ke-${i+1}`;
+
+    t.addEventListener("dragover",e=>e.preventDefault());
+
+    t.addEventListener("drop",e=>{
+      e.preventDefault();
+      const data=e.dataTransfer.getData("text");
+
+      if(data===r){
+        t.textContent=data;
+        t.classList.add("correct");
+        emoji.textContent="😄";
+
+        // HILANGKAN CARD BIRU
+        window.draggedWord.classList.add("hide");
+        setTimeout(()=>window.draggedWord.remove(),300);
+      }else{
+        t.classList.add("wrong");
+        emoji.textContent="😢";
+        setTimeout(()=>t.classList.remove("wrong"),300);
+      }
+    });
+
+    targetsEl.appendChild(t);
+  });
+}
+
+init();
+</script>
+
+</body>
+</html>
